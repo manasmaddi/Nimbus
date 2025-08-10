@@ -1,0 +1,16 @@
+# Python virtual environment
+venv/
+
+# Python compiled files
+__pycache__/
+*.pyc
+
+# Node dependencies
+node_modules/
+build/
+
+# Environment variables
+.env
+
+# MacOS files
+.DS_Store
