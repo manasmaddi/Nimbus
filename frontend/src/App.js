@@ -10,6 +10,8 @@ import {
   CloudUpload,
 } from 'lucide-react';
 import axios from 'axios';
+import './App.css'; // Assuming you have a separate CSS file for the App component if needed
+import './index.css'; // Make sure this is imported
 
 const App = () => {
   const { isAuthenticated, loginWithRedirect, logout, getAccessTokenSilently } =
@@ -78,18 +80,36 @@ const App = () => {
     }
   };
 
+  const getStatusClasses = () => {
+    if (uploadStatus.includes('failed') || uploadStatus.includes('No file selected')) {
+      return 'status-message red';
+    } else if (uploadStatus.includes('successful')) {
+      return 'status-message green';
+    } else {
+      return 'hidden';
+    }
+  };
+
+  const getStatusIcon = () => {
+    if (uploadStatus.includes('successful')) {
+      return <CheckCircle className="mr-3" size={20} />;
+    } else {
+      return <XCircle className="mr-3" size={20} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-xl rounded-2xl p-8 max-w-lg w-full transform transition duration-500 hover:scale-105">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+    <div className="app-container">
+      <div className="card">
+        <h1 style={{fontSize: '1.875rem', fontWeight: 'bold', textAlign: 'center', color: '#1f2937', marginBottom: '1.5rem'}}>
           File Upload Portal
         </h1>
 
-        <div className="mb-6 flex justify-center">
+        <div style={{marginBottom: '1.5rem', display: 'flex', justifyContent: 'center'}}>
           {isAuthenticated ? (
             <button
               onClick={handleLogout}
-              className="flex items-center px-6 py-3 bg-red-600 text-white font-semibold rounded-full shadow-lg hover:bg-red-700 transition duration-300"
+              className="auth-button sign-out-button"
             >
               <LogOut className="mr-2" size={20} />
               Sign Out
@@ -97,7 +117,7 @@ const App = () => {
           ) : (
             <button
               onClick={handleLogin}
-              className="flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition duration-300"
+              className="auth-button sign-in-button"
             >
               <LogIn className="mr-2" size={20} />
               Sign In with Auth0
@@ -106,34 +126,43 @@ const App = () => {
         </div>
 
         {isAuthenticated && (
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4 text-center">
-              Upload a File to S3
+          <div style={{marginTop: '2rem'}}>
+            <h2 style={{fontSize: '1.25rem', fontWeight: '600', color: '#374151', marginBottom: '1rem', textAlign: 'center'}}>
+              Upload a File
             </h2>
-            <form onSubmit={handleFileUpload} className="space-y-4">
-              <label
-                htmlFor="file-input"
-                className="block text-sm font-medium text-gray-700"
-              >
+            <form onSubmit={handleFileUpload} style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+              <label htmlFor="file-input" style={{display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151'}}>
                 Choose a file:
               </label>
-              <div className="flex items-center justify-center w-full">
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%'}}>
                 <label
                   htmlFor="file-input"
-                  className="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-300"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '12rem',
+                    border: '2px dashed #d1d5db',
+                    borderRadius: '0.5rem',
+                    cursor: 'pointer',
+                    backgroundColor: '#f9fafb',
+                    transition: 'background-color 0.3s',
+                  }}
                 >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <CloudUpload className="w-10 h-10 mb-3 text-gray-400" />
-                    <p className="mb-2 text-sm text-gray-500">
-                      <span className="font-semibold">Click to upload</span> or
+                  <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '1.25rem', paddingBottom: '1.5rem'}}>
+                    <CloudUpload style={{width: '2.5rem', height: '2.5rem', marginBottom: '0.75rem', color: '#9ca3af'}} />
+                    <p style={{marginBottom: '0.5rem', fontSize: '0.875rem', color: '#6b7280'}}>
+                      <span style={{fontWeight: '600'}}>Click to upload</span> or
                       drag and drop
                     </p>
                     {file ? (
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p style={{fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.25rem'}}>
                         Selected: {file.name}
                       </p>
                     ) : (
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p style={{fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.25rem'}}>
                         Any file type is acceptable
                       </p>
                     )}
@@ -141,7 +170,7 @@ const App = () => {
                   <input
                     id="file-input"
                     type="file"
-                    className="hidden"
+                    style={{display: 'none'}}
                     onChange={handleFileChange}
                   />
                 </label>
@@ -150,16 +179,17 @@ const App = () => {
               <button
                 type="submit"
                 disabled={!file || isUploading}
-                className="w-full flex items-center justify-center px-6 py-3 bg-green-600 text-white font-semibold rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-700 transition duration-300"
+                className="upload-button"
+                style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.75rem 1.5rem', fontWeight: '600', color: '#fff', borderRadius: '9999px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
               >
                 {isUploading ? (
                   <>
-                    <Loader2 className="mr-2 animate-spin" size={20} />
+                    <Loader2 className="spinner" style={{marginRight: '0.5rem'}} size={20} />
                     Uploading...
                   </>
                 ) : (
                   <>
-                    <FileUp className="mr-2" size={20} />
+                    <FileUp style={{marginRight: '0.5rem'}} size={20} />
                     Upload File
                   </>
                 )}
@@ -168,17 +198,13 @@ const App = () => {
 
             {uploadStatus && (
               <div
-                className={`mt-4 p-4 rounded-lg flex items-center ${
-                  uploadStatus.includes('failed') ||
-                  uploadStatus.includes('No file selected')
-                    ? 'bg-red-100 text-red-700'
-                    : 'bg-green-100 text-green-700'
-                }`}
+                className={getStatusClasses()}
               >
-                {uploadStatus.includes('successful') ? (
-                  <CheckCircle className="mr-3" size={20} />
+                {uploadStatus.includes('successful') ||
+                uploadStatus.includes('No file selected') ? (
+                  getStatusIcon()
                 ) : (
-                  <XCircle className="mr-3" size={20} />
+                  getStatusIcon()
                 )}
                 {uploadStatus}
               </div>
