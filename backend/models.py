@@ -1,4 +1,4 @@
-from app import db
+from extensions import db
 from datetime import datetime
 
 class File(db.Model):
@@ -6,4 +6,4 @@ class File(db.Model):
     user_id = db.Column(db.String, nullable=False)
     filename = db.Column(db.String, nullable=False)
     s3_url = db.Column(db.String, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
